@@ -10,6 +10,7 @@ public class MainManager : MonoBehaviour
     public int LineCount = 6;
     public Rigidbody Ball;
 
+    public Text TitleText;
     public Text ScoreText;
     public GameObject GameOverText;
     
@@ -24,7 +25,9 @@ public class MainManager : MonoBehaviour
     {
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
-        
+        SetHighScore();
+
+
         int[] pointCountArray = new [] {1,1,2,2,5,5};
         for (int i = 0; i < LineCount; ++i)
         {
@@ -68,9 +71,31 @@ public class MainManager : MonoBehaviour
         ScoreText.text = $"Score : {m_Points}";
     }
 
+    void SetHighScore()
+    {
+        string highScorePlayerName = StoreManager.Instance.highScoreName != null ? StoreManager.Instance.highScoreName : " ";
+        int score = StoreManager.Instance.highScore > 0 ? StoreManager.Instance.highScore : 0;
+        TitleText.text = $"Best Score : {highScorePlayerName} : {score}";
+    }
+
+    void UpdateHighScore()
+    {
+        if (StoreManager.Instance.highScore < m_Points)
+        {
+            StoreManager.Instance.SetHighScore(m_Points);
+            SetHighScore();
+        }
+    }
+
     public void GameOver()
     {
+        UpdateHighScore();
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene("Start Menu");
     }
 }
